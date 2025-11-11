@@ -1,0 +1,3 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","7750","verify login","Google Chrome","Mon Nov 10 19:23:53 IST 2025","failed","Mon Nov 10 19:24:01 IST 2025","","loginpage.spec.ts","",""
+"","8033","verify invalid login","Google Chrome","Mon Nov 10 19:23:53 IST 2025","passed","Mon Nov 10 19:24:01 IST 2025","","loginpage.spec.ts","",""
