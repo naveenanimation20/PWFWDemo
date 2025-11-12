@@ -19,6 +19,7 @@ export class ElementUtil{
      * @returns 
      */
     private getLocator(locator: flexibleLocator, index?: number): Locator {
+        
         if (typeof locator === 'string') {
             if (index) {
                 return this.page.locator(locator).nth(index);
@@ -142,6 +143,17 @@ export class ElementUtil{
         return await this.getLocator(locator).allInnerTexts();
     }
 
+    async getAllElementsCount(locator: Locator | string): Promise<number>{
+        if (typeof locator === 'string') {
+            return await this.page.locator(locator).count();
+        }
+        else {
+            return await locator.count();
+        }
+     }
+    
+    
+
 
     //============================ Element Visibility & State Check ================//
  /**
@@ -230,7 +242,7 @@ export class ElementUtil{
      * wait for a specific timeout (static)
      */
     async sleep(timeout: number): Promise<void>{
-        this.page.waitForTimeout(timeout);
+        await this.page.waitForTimeout(timeout);
         console.log(`waited for ${timeout} ms`);
     }
 
