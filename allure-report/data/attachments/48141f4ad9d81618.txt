@@ -1,6 +1,0 @@
-Filled text : pwtest@nal.com into element : locator('#input-email')
-Filled text : test123 into element : locator('#input-password')
-Clicked on element : locator('input[value="Login"]')
-Filled text : macbook into element : getByRole('textbox', { name: 'Search' })
-Clicked on element : locator('.btn.btn-default.btn-lg')
-Search Results Count : [object Promise]

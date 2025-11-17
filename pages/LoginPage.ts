@@ -1,6 +1,7 @@
 import { expect, Locator, Page } from '@playwright/test';
 import { ElementUtil } from '../utils/ElementUtil';
 import { HomePage } from '../pages/HomePage';
+import { RegisterPage } from './RegisterPage';
 
     export class LoginPage {
 
@@ -9,6 +10,7 @@ import { HomePage } from '../pages/HomePage';
     private readonly passwordInput: Locator;
     private readonly loginButton: Locator;
     private readonly warningMsg: Locator;
+    private readonly registerLink: Locator;
     private readonly eleUtil;    
 
     constructor(page: Page) {
@@ -18,6 +20,7 @@ import { HomePage } from '../pages/HomePage';
         this.passwordInput = page.locator('#input-password');
         this.loginButton = page.locator('input[value="Login"]');
         this.warningMsg = page.locator('.alert.alert-danger.alert-dismissible');
+        this.registerLink = page.getByText('Register', { exact: true });
     }
 
     async gotoLoginPage() {
@@ -34,7 +37,11 @@ import { HomePage } from '../pages/HomePage';
     async verifyInvalidLoginMessage() {
         await expect(this.warningMsg).toBeVisible({ timeout: 10000 });
     }
-
+        
+    async navigateToRegisterPage(): Promise<RegisterPage> {
+        await this.eleUtil.click(this.registerLink, { force: true }, 1);
+        return new RegisterPage(this.page);
+    }
 
 
 
