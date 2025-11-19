@@ -19,7 +19,16 @@ export default defineConfig({
     headless: false,
     trace: 'on-first-retry',
     screenshot: 'on',
-    video: 'on'
+    video: 'on',
+    baseURL: 'https://naveenautomationlabs.com/opencart',    
+
+    
+  },
+
+  metadata: {
+    appUsername: 'pwtest@nal.com',
+    appPassword: 'test123'
+  
   },
 
   /* Configure projects for major browsers */

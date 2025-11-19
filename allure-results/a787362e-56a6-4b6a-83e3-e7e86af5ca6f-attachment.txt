@@ -1,0 +1,3 @@
+Filled text : pwtest123@nal.com into element : locator('#input-email')
+Filled text : test12323232 into element : locator('#input-password')
+Clicked on element : locator('input[value="Login"]')

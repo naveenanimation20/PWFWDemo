@@ -23,8 +23,8 @@ import { RegisterPage } from './RegisterPage';
         this.registerLink = page.getByText('Register', { exact: true });
     }
 
-    async gotoLoginPage() {
-        await this.page.goto('https://naveenautomationlabs.com/opencart/index.php?route=account/login');
+    async gotoLoginPage(baseURL: string|undefined) {
+        await this.page.goto(baseURL+'/index.php?route=account/login');
     }
 
     async login(email: string, password: string) : Promise<HomePage>{

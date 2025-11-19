@@ -1,8 +1,7 @@
-import { test, expect } from '@playwright/test';
-import { LoginPage } from '../pages/LoginPage';
-import { HomePage } from '../pages/HomePage';
 import { ResultsPage } from '../pages/ResultsPage';
 import { ProductInfoPage } from '../pages/ProductInfoPage';
+import { test, expect } from '../fixtures/baseFixtures';
+
 
 
 
@@ -13,12 +12,8 @@ let search = [
 ];
 
 for (let product of search) {
-    test(`verify Product Search ${product.productname}`,{tag: ['@product', '@regression' , '@sanity']}, async ({ page }) => {
-    let loginPage = new LoginPage(page);
-
-    await loginPage.gotoLoginPage();
-    let homePage: HomePage = await loginPage.login('pwtest@nal.com', 'test123');
-    expect.soft(await homePage.isUserLoggedIn()).toBeTruthy();
+    test(`verify Product Search ${product.productname}`,{tag: ['@product', '@regression' , '@sanity']}, async ({ homePage }) => {
+    
     let resultsPage: ResultsPage = await homePage.doSearch(product.searchkey);
 
     let productInfoPage: ProductInfoPage = await resultsPage.selectProduct(product.productname); 
@@ -28,12 +23,7 @@ for (let product of search) {
 
 
 for (let product of search) {
-    test(`verify Product Images ${product.productname} : ${product.imagecount}`, {tag: ['@product', '@regression' , '@sanity']}, async ({ page }) => {
-    let loginPage = new LoginPage(page);
-
-    await loginPage.gotoLoginPage();
-    let homePage: HomePage = await loginPage.login('pwtest@nal.com', 'test123');
-    expect.soft(await homePage.isUserLoggedIn()).toBeTruthy();
+    test(`verify Product Images ${product.productname} : ${product.imagecount}`, {tag: ['@product', '@regression' , '@sanity']}, async ({ homePage }) => {
     let resultsPage: ResultsPage = await homePage.doSearch(product.searchkey);
 
     let productInfoPage: ProductInfoPage = await resultsPage.selectProduct(product.productname); 
@@ -44,12 +34,8 @@ for (let product of search) {
 
 
 
-test(`verify Product Meta data`, {tag: ['@product', '@regression']}, async ({ page }) => {
-    let loginPage = new LoginPage(page);
-
-    await loginPage.gotoLoginPage();
-    let homePage: HomePage = await loginPage.login('pwtest@nal.com', 'test123');
-    expect.soft(await homePage.isUserLoggedIn()).toBeTruthy();
+test(`verify Product Meta data`, {tag: ['@product', '@regression']}, async ({ homePage }) => {
+    
     let resultsPage: ResultsPage = await homePage.doSearch('macbook');
 
     let productInfoPage: ProductInfoPage = await resultsPage.selectProduct('MacBook Pro'); 
@@ -63,12 +49,8 @@ test(`verify Product Meta data`, {tag: ['@product', '@regression']}, async ({ pa
 });
     
 
-test(`verify Product Pricing data`, {tag: ['@product', '@regression']}, async ({ page }) => {
-    let loginPage = new LoginPage(page);
+test(`verify Product Pricing data`, {tag: ['@product', '@regression']}, async ({ homePage }) => {
 
-    await loginPage.gotoLoginPage();
-    let homePage: HomePage = await loginPage.login('pwtest@nal.com', 'test123');
-    expect.soft(await homePage.isUserLoggedIn()).toBeTruthy();
     let resultsPage: ResultsPage = await homePage.doSearch('macbook');
 
     let productInfoPage: ProductInfoPage = await resultsPage.selectProduct('MacBook Pro'); 

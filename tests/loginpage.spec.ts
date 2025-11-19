@@ -1,5 +1,5 @@
-import { test, expect } from '@playwright/test';
 import { LoginPage } from '../pages/LoginPage';
+import { test, expect } from '../fixtures/baseFixtures';
 
 
 test('verify login', { 
@@ -11,19 +11,19 @@ test('verify login', {
     { type: 'severity', description: 'critical' },
     {type: 'owner', description: 'Naveen'}
      ]
-}, async ({ page }) => {
+}, async ({ homePage }) => {
 
-    let loginPage = new LoginPage(page);
-    await loginPage.gotoLoginPage();
-    let homePage = await loginPage.login('pwtest@nal.com', 'test123');
-    await expect(page).toHaveTitle('My Account');
+    // let loginPage = new LoginPage(page);
+    // await loginPage.gotoLoginPage();
+    // let homePage = await loginPage.login('pwtest@nal.com', 'test123');
+    await expect(homePage.page).toHaveTitle('My Account');
     expect.soft(await homePage.isUserLoggedIn()).toBeTruthy();
 });
 
-test('verify invalid login @smkoe @login', async ({ page }) => {
+test('verify invalid login @smkoe @login', async ({ page, baseURL }) => {
    
     let loginPage = new LoginPage(page);
-    await loginPage.gotoLoginPage();
+    await loginPage.gotoLoginPage(baseURL);
     loginPage.login('pwtest123@nal.com', 'test12323232');
     await page.waitForTimeout(5000);
 

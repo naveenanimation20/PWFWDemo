@@ -6,6 +6,11 @@
   "type": "module",
   "scripts": {
     "test": "playwright test",
+    "test:dev": "playwright test --config=playwright.config.dev.ts",
+    "test:qa": "playwright test --config=playwright.config.qa.ts",
+    "test:stage": "playwright test --config=playwright.config.stage.ts",
+    "test:uat": "playwright test --config=playwright.config.uat.ts",
+    "test:prod": "playwright test --config=playwright.config.prod.ts",
     "allure:generate": "allure generate allure-results --clean -o allure-report",
     "allure:open": "allure open allure-report"
   },

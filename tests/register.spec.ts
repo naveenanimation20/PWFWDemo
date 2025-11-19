@@ -4,7 +4,6 @@ import { parse } from 'csv-parse/sync';
 import { LoginPage } from '../pages/LoginPage';
 import { RegisterPage } from '../pages/RegisterPage';
 
-
 type RegData = {
     firstName: string;
     lastName: string;
@@ -20,10 +19,10 @@ let registrationData: RegData[] = parse(fileContent, {
 });
 
 for (let user of registrationData) {
-    test(`Registration test for ${user.firstName}`, async ({ page }) => {
+    test(`Registration test for ${user.firstName}`, async ({ page, baseURL }) => {
 
         let loginPage = new LoginPage(page);
-        await loginPage.gotoLoginPage();
+        await loginPage.gotoLoginPage(baseURL);
         let regPage: RegisterPage = await loginPage.navigateToRegisterPage();
 
         await regPage.registerUser(
