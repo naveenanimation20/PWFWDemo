@@ -1,4 +1,0 @@
-pwtest@nal.com test123
-Filled text : pwtest@nal.com into element : locator('#input-email')
-Filled text : test123 into element : locator('#input-password')
-Clicked on element : locator('input[value="Login"]')
