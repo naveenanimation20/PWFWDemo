@@ -12,7 +12,19 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: [
     ['html', { outputFolder: 'playwright-report' , open: 'never'}],
-    ['allure-playwright']
+    ['allure-playwright'],
+    ['playwright-html-reporter', {
+      testFolder: 'tests',
+      title: 'OPEN CART HTML Report',
+      project: 'Open Cart',
+      release: '9.87.6',
+      testEnvironment: 'PROD',
+      embedAssets: true,
+      embedAttachments: true,
+      outputFolder: 'playwright-html-report',
+      minifyAssets: true,
+      startServer: false,
+    }]
   ],
 
   use: {

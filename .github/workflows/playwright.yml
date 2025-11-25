@@ -48,8 +48,10 @@ jobs:
         run: |
           echo "Allure report contents:"
           ls -R allure-report || exit 1
-          echo "Playwright report contents:"
+          echo "Playwright built-in report contents:"
           ls -R playwright-report || exit 1
+          echo "Playwright HTML Reporter contents:"
+          ls -R playwright-html-report || exit 1
 
       # 8️⃣ Upload artifacts
       - name: Upload Allure Report
@@ -61,8 +63,14 @@ jobs:
       - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-html-report
+          name: playwright-report
           path: playwright-report/
+
+      - name: Upload Playwright HTML Reporter
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-html-report
+          path: playwright-html-report/
 
   publish-reports:
     needs: test
@@ -86,16 +94,24 @@ jobs:
       - name: Download Playwright Report
         uses: actions/download-artifact@v4
         with:
-          name: playwright-html-report
+          name: playwright-report
           path: playwright-report
+
+      - name: Download Playwright HTML Reporter
+        uses: actions/download-artifact@v4
+        with:
+          name: playwright-html-report
+          path: playwright-html-report
 
       # 3️⃣ Verify downloaded reports
       - name: Verify reports
         run: |
           echo "Allure report contents:"
           ls -R allure-report || exit 1
-          echo "Playwright report contents:"
+          echo "Playwright built-in report contents:"
           ls -R playwright-report || exit 1
+          echo "Playwright HTML Reporter contents:"
+          ls -R playwright-html-report || exit 1
 
       # 4️⃣ Prepare combined reports directory for GitHub Pages
       - name: Prepare reports for deployment
@@ -103,6 +119,7 @@ jobs:
           mkdir -p gh-pages-deploy
           cp -r allure-report gh-pages-deploy/
           cp -r playwright-report gh-pages-deploy/
+          cp -r playwright-html-report gh-pages-deploy/
           echo "Combined reports directory contents:"
           ls -R gh-pages-deploy
 
@@ -119,5 +136,6 @@ jobs:
       - name: Report URLs
         run: |
           echo "Reports Published!"
-          echo "Playwright: https://naveenanimation20.github.io/PWFWDemo/playwright-report/index.html"
+          echo "Playwright Built-in: https://naveenanimation20.github.io/PWFWDemo/playwright-report/index.html"
+          echo "Playwright HTML Reporter: https://naveenanimation20.github.io/PWFWDemo/playwright-html-report/index.html"
           echo "Allure: https://naveenanimation20.github.io/PWFWDemo/allure-report/index.html"
