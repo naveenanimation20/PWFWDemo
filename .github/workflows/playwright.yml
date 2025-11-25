@@ -25,9 +25,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # 4️⃣ Install Playwright Browsers
+      # 4️⃣ Install Playwright Browsers (including Chrome for channel: 'chrome')
       - name: Install Playwright Browsers
-        run: npx playwright install --with-deps
+        run: npx playwright install chrome --with-deps
 
       # 5️⃣ Run Playwright Tests (HTML report will be generated in playwright-report)
       - name: Run Playwright Tests
