@@ -14,7 +14,8 @@ Welcome to the **PWFWDemo** automation project. Below you can find the latest te
 
 Click the badges below to view the latest reports published via GitHub Pages:
 
-[![Playwright Report](https://img.shields.io/badge/Playwright-Report-blue)](https://naveenanimation20.github.io/PWFWDemo/playwright-report/index.html)  
+[![Playwright Report](https://img.shields.io/badge/Playwright-Report-blue)](https://naveenanimation20.github.io/PWFWDemo/playwright-report/index.html)
+[![Playwright HTML Reporter](https://img.shields.io/badge/Playwright_HTML-Report-green)](https://naveenanimation20.github.io/PWFWDemo/playwright-html-report/index.html)
 [![Allure Report](https://img.shields.io/badge/Allure-Report-red)](https://naveenanimation20.github.io/PWFWDemo/allure-report/index.html)
 
 ---
