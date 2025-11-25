@@ -40,44 +40,68 @@ export default defineConfig({
   metadata: {
     appUsername: 'pwtest@nal.com',
     appPassword: 'test123'
-  
   },
 
   /* Configure projects for major browsers */
   projects: [
-    // {
-    //   name: 'chromium',
-    //   use: { ...devices['Desktop Chrome'] },
-    // },
-
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
-
-    /* Test against mobile viewports. */
-    // {
-    //   name: 'Mobile Chrome',
-    //   use: { ...devices['Pixel 5'] },
-    // },
-    // {
-    //   name: 'Mobile Safari',
-    //   use: { ...devices['iPhone 12'] },
-    // },
-
-    /* Test against branded browsers. */
-    // {
-    //   name: 'Microsoft Edge',
-    //   use: { ...devices['Desktop Edge'], channel: 'msedge' },
-    // },
     {
       name: 'Google Chrome',
-      use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+      use: {
+        channel: 'chrome',
+        viewport: null,
+        launchOptions: {
+          args: ['--start-maximized'],
+          ignoreDefaultArgs: ['--window-size=1280,720']
+        }
+      }
+    },
+
+    {
+      name: 'Microsoft Edge',
+      use: {
+        channel: 'msedge',
+        viewport: null,
+        launchOptions: {
+          args: ['--start-maximized'],
+          ignoreDefaultArgs: ['--window-size=1280,720']
+        }
+      }
+    },
+
+    {
+      name: 'Chromium',
+      use: {
+        browserName: 'chromium',
+        viewport: { width: 1920, height: 1080 },
+        launchOptions: {
+          args: [],
+          ignoreDefaultArgs: ['--window-size=1280,720']
+        }
+      }
+    },
+
+    {
+      name: 'Firefox',
+      use: {
+        browserName: 'firefox',
+        viewport: { width: 1920, height: 1080 },
+        launchOptions: {
+          args: [],
+          ignoreDefaultArgs: ['--window-size=1280,720']
+        }
+      }
+    },
+
+    {
+      name: 'WebKit',
+      use: {
+        browserName: 'webkit',
+        viewport: { width: 1920, height: 1080 },
+        launchOptions: {
+          args: [],
+          ignoreDefaultArgs: ['--window-size=1280,720']
+        }
+      }
     }
   ],
 
