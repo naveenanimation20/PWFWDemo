@@ -90,4 +90,4 @@ jobs:
           publish_dir: |
             allure-report
             playwright-report
-          destination_dir: reports   # ✅ Reports will live in 'reports/' folder on GH Pages
+          destination_dir: .
