@@ -97,21 +97,27 @@ jobs:
           echo "Playwright report contents:"
           ls -R playwright-report || exit 1
 
-      # 4️⃣ Publish reports to GitHub Pages
+      # 4️⃣ Prepare combined reports directory for GitHub Pages
+      - name: Prepare reports for deployment
+        run: |
+          mkdir -p gh-pages-deploy
+          cp -r allure-report gh-pages-deploy/
+          cp -r playwright-report gh-pages-deploy/
+          echo "Combined reports directory contents:"
+          ls -R gh-pages-deploy
+
+      # 5️⃣ Publish reports to GitHub Pages
       - name: Publish Reports to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: |
-            allure-report
-            playwright-report
-          destination_dir: .
+          publish_dir: gh-pages-deploy
           force_orphan: true
 
-      # 5️⃣ Print final URLs
+      # 6️⃣ Print final URLs
       - name: Report URLs
         run: |
-          echo "🎉 Reports Published!"
+          echo "Reports Published!"
           echo "Playwright: https://naveenanimation20.github.io/PWFWDemo/playwright-report/index.html"
-          echo "Allure: https://naveenautomationlabs.github.io/PWFWDemo/allure-report/index.html"
+          echo "Allure: https://naveenanimation20.github.io/PWFWDemo/allure-report/index.html"
