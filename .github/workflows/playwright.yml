@@ -1,4 +1,4 @@
-name: Playwright Tests
+name: Playwright & Allure Reports
 
 on:
   workflow_dispatch:
@@ -29,32 +29,36 @@ jobs:
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps
 
-      # 5️⃣ Run Playwright tests
+      # 5️⃣ Run Playwright Tests (HTML report will be generated in playwright-report)
       - name: Run Playwright Tests
         run: npx playwright test --config=playwright.config.ts
 
-      # 6️⃣ Generate Allure Report
+      # 6️⃣ Generate Allure HTML Report
       - name: Generate Allure Report
         if: always()
         run: |
-          npx allure generate allure-results --clean -o allure-report || true
+          if [ -d "allure-results" ]; then
+            npx allure generate allure-results --clean -o allure-report
+          else
+            echo "Allure results folder missing, skipping report generation."
+          fi
 
       # 7️⃣ Verify reports exist
       - name: Verify generated reports
         run: |
-          echo "Allure report files:"
+          echo "Allure report contents:"
           ls -R allure-report || exit 1
-          echo "Playwright report files:"
+          echo "Playwright report contents:"
           ls -R playwright-report || exit 1
 
       # 8️⃣ Upload artifacts
-      - name: Upload Allure report
+      - name: Upload Allure Report
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-report/
 
-      - name: Upload Playwright report
+      - name: Upload Playwright Report
         uses: actions/upload-artifact@v4
         with:
           name: playwright-html-report
@@ -88,12 +92,12 @@ jobs:
       # 3️⃣ Verify downloaded reports
       - name: Verify reports
         run: |
-          echo "Allure report files:"
+          echo "Allure report contents:"
           ls -R allure-report || exit 1
-          echo "Playwright report files:"
+          echo "Playwright report contents:"
           ls -R playwright-report || exit 1
 
-      # 4️⃣ Publish to GitHub Pages
+      # 4️⃣ Publish reports to GitHub Pages
       - name: Publish Reports to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -105,9 +109,9 @@ jobs:
           destination_dir: .
           force_orphan: true
 
-      # 5️⃣ Print URLs
+      # 5️⃣ Print final URLs
       - name: Report URLs
         run: |
           echo "🎉 Reports Published!"
           echo "Playwright: https://naveenanimation20.github.io/PWFWDemo/playwright-report/index.html"
-          echo "Allure: https://naveenanimation20.github.io/PWFWDemo/allure-report/index.html"
+          echo "Allure: https://naveenautomationlabs.github.io/PWFWDemo/allure-report/index.html"
