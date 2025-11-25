@@ -39,24 +39,22 @@ jobs:
         run: |
           npx allure generate allure-results --clean -o allure-report || true
 
-      # 7️⃣ Ensure reports exist
-      - name: Check generated reports
+      # 7️⃣ Verify reports exist
+      - name: Verify generated reports
         run: |
-          echo "Allure Report files:"
-          ls -la allure-report || echo "Allure report not generated!"
-          echo "Playwright Report files:"
-          ls -la playwright-report || echo "Playwright report not generated!"
+          echo "Allure report files:"
+          ls -R allure-report || exit 1
+          echo "Playwright report files:"
+          ls -R playwright-report || exit 1
 
-      # 8️⃣ Upload artifacts for next job
+      # 8️⃣ Upload artifacts
       - name: Upload Allure report
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: allure-report
           path: allure-report/
 
       - name: Upload Playwright report
-        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: playwright-html-report
@@ -87,13 +85,13 @@ jobs:
           name: playwright-html-report
           path: playwright-report
 
-      # 3️⃣ Ensure reports exist
+      # 3️⃣ Verify downloaded reports
       - name: Verify reports
         run: |
-          echo "Allure Report files:"
-          ls -la allure-report || echo "Allure report missing!"
-          echo "Playwright Report files:"
-          ls -la playwright-report || echo "Playwright report missing!"
+          echo "Allure report files:"
+          ls -R allure-report || exit 1
+          echo "Playwright report files:"
+          ls -R playwright-report || exit 1
 
       # 4️⃣ Publish to GitHub Pages
       - name: Publish Reports to GitHub Pages
@@ -107,8 +105,8 @@ jobs:
           destination_dir: .
           force_orphan: true
 
-      # 5️⃣ Print URLs in Actions logs
-      - name: Print report URLs
+      # 5️⃣ Print URLs
+      - name: Report URLs
         run: |
           echo "🎉 Reports Published!"
           echo "Playwright: https://naveenanimation20.github.io/PWFWDemo/playwright-report/index.html"
