@@ -40,8 +40,8 @@ export default defineConfig({
   },
 
   metadata: {
-    appUsername: 'narendraautomation@yopmail.com"',
-    appPassword: 'Test@1234567'
+    appUsername: 'gagantyagi@test.com',
+    appPassword: 'test@123',
   },
 
   /* Configure projects for major browsers */
