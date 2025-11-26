@@ -1,0 +1,298 @@
+# ============================================
+# OPTION 1: FULLY AUTOMATED PIPELINE
+# ============================================
+# Flow: dev → qa → stage → prod (automatic)
+# Trigger: Push to develop/master branches
+# ============================================
+
+name: Playwright Auto Pipeline
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+    branches: [master]
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ============================================
+  # DEV Environment Tests
+  # ============================================
+  dev-tests:
+    name: 🔧 DEV Tests
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: 🧪 Run DEV tests
+        run: npx playwright test --config=playwright.config.dev.ts
+        env:
+          CI: true
+
+      - name: 📊 Upload HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-dev
+          path: playwright-report/
+          retention-days: 30
+
+      - name: 📊 Upload Custom HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-html-report-dev
+          path: playwright-html-report/
+          retention-days: 30
+
+      - name: 📊 Upload Allure Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-dev
+          path: allure-results/
+          retention-days: 30
+
+      - name: 📸 Upload Test Results (Screenshots/Videos)
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results-dev
+          path: test-results/
+          retention-days: 7
+
+  # ============================================
+  # QA Environment Tests
+  # ============================================
+  qa-tests:
+    name: 🔍 QA Tests
+    runs-on: ubuntu-latest
+    needs: dev-tests
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: 🧪 Run QA tests
+        run: npx playwright test --config=playwright.config.qa.ts
+        env:
+          CI: true
+
+      - name: 📊 Upload HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-qa
+          path: playwright-report/
+          retention-days: 30
+
+      - name: 📊 Upload Custom HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-html-report-qa
+          path: playwright-html-report/
+          retention-days: 30
+
+      - name: 📊 Upload Allure Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-qa
+          path: allure-results/
+          retention-days: 30
+
+      - name: 📸 Upload Test Results (Screenshots/Videos)
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results-qa
+          path: test-results/
+          retention-days: 7
+
+  # ============================================
+  # STAGE Environment Tests
+  # ============================================
+  stage-tests:
+    name: 🎯 STAGE Tests
+    runs-on: ubuntu-latest
+    needs: qa-tests
+    environment:
+      name: staging
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: 🧪 Run STAGE tests
+        run: npx playwright test --config=playwright.config.stage.ts
+        env:
+          CI: true
+
+      - name: 📊 Upload HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-stage
+          path: playwright-report/
+          retention-days: 30
+
+      - name: 📊 Upload Custom HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-html-report-stage
+          path: playwright-html-report/
+          retention-days: 30
+
+      - name: 📊 Upload Allure Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-stage
+          path: allure-results/
+          retention-days: 30
+
+      - name: 📸 Upload Test Results (Screenshots/Videos)
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results-stage
+          path: test-results/
+          retention-days: 7
+
+  # ============================================
+  # PROD Environment Tests
+  # ============================================
+  prod-tests:
+    name: 🚀 PROD Tests
+    runs-on: ubuntu-latest
+    needs: stage-tests
+    environment:
+      name: production
+    
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: 📚 Install dependencies
+        run: npm ci
+
+      - name: 🎭 Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: 🧪 Run PROD tests
+        run: npx playwright test --config=playwright.config.prod.ts
+        env:
+          CI: true
+
+      - name: 📊 Upload HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-report-prod
+          path: playwright-report/
+          retention-days: 30
+
+      - name: 📊 Upload Custom HTML Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: playwright-html-report-prod
+          path: playwright-html-report/
+          retention-days: 30
+
+      - name: 📊 Upload Allure Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: allure-results-prod
+          path: allure-results/
+          retention-days: 30
+
+      - name: 📸 Upload Test Results (Screenshots/Videos)
+        uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: test-results-prod
+          path: test-results/
+          retention-days: 7
+
+  # ============================================
+  # Generate & Deploy Allure Report
+  # ============================================
+  allure-report:
+    name: 📈 Allure Report
+    runs-on: ubuntu-latest
+    needs: [dev-tests, qa-tests, stage-tests, prod-tests]
+    if: always()
+    
+    steps:
+      - name: 📥 Download all Allure results
+        uses: actions/download-artifact@v4
+        with:
+          pattern: allure-results-*
+          path: allure-results
+          merge-multiple: true
+
+      - name: 📊 Generate Allure Report
+        uses: simple-elf/allure-report-action@master
+        if: always()
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          keep_reports: 20
+
+      - name: 🌐 Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        if: always()
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history
