@@ -24,3 +24,7 @@ test('verify invalid login @smoke @login @api', async ({ page, baseURL }) => {
 
     loginPage.verifyInvalidLoginMessage();
 });
+
+test('verify invalid login @newone', async ({  }) => {
+  expect(10).toBe(10);
+});

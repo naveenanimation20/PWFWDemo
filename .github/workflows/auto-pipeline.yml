@@ -5,6 +5,7 @@
 # Trigger: Push to develop/main branches
 # Reports: Published to GitHub Pages
 # ✅ Playwright browsers cached for faster runs
+# ✅ Allure environment labels for separation
 # ============================================
 
 name: Playwright Auto Pipeline
@@ -57,10 +58,31 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
 
+      # ✅ Clean old results
+      - name: 🧹 Clean previous results
+        run: |
+          rm -rf allure-results playwright-report playwright-html-report test-results
+
       - name: 🧪 Run DEV tests
-        run: npx playwright test --grep "@login" --config=playwright.config.dev.ts
+        run: npx playwright test --grep "@newone" --config=playwright.config.dev.ts
         env:
           CI: true
+          ALLURE_ENVIRONMENT: DEV
+
+      # ✅ Add environment label to Allure results
+      - name: 🏷️ Add Allure environment info
+        if: always()
+        run: |
+          echo "Environment=DEV" > allure-results/environment.properties
+          echo "Browser=Google Chrome" >> allure-results/environment.properties
+          echo "Config=playwright.config.dev.ts" >> allure-results/environment.properties
+          # Add parent suite label to each result file
+          for file in allure-results/*-result.json; do
+            if [ -f "$file" ]; then
+              # Add DEV label to test names
+              sed -i 's/"name":"\([^"]*\)"/"name":"[DEV] \1"/g' "$file" 2>/dev/null || true
+            fi
+          done
 
       - name: 📊 Upload HTML Report
         uses: actions/upload-artifact@v4
@@ -133,10 +155,30 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
 
+      # ✅ Clean old results
+      - name: 🧹 Clean previous results
+        run: |
+          rm -rf allure-results playwright-report playwright-html-report test-results
+
       - name: 🧪 Run QA tests
-        run: npx playwright test --grep "@login" --config=playwright.config.qa.ts
+        run: npx playwright test --grep "@newone" --config=playwright.config.qa.ts
         env:
           CI: true
+          ALLURE_ENVIRONMENT: QA
+
+      # ✅ Add environment label to Allure results
+      - name: 🏷️ Add Allure environment info
+        if: always()
+        run: |
+          echo "Environment=QA" > allure-results/environment.properties
+          echo "Browser=Google Chrome" >> allure-results/environment.properties
+          echo "Config=playwright.config.qa.ts" >> allure-results/environment.properties
+          # Add parent suite label to each result file
+          for file in allure-results/*-result.json; do
+            if [ -f "$file" ]; then
+              sed -i 's/"name":"\([^"]*\)"/"name":"[QA] \1"/g' "$file" 2>/dev/null || true
+            fi
+          done
 
       - name: 📊 Upload HTML Report
         uses: actions/upload-artifact@v4
@@ -211,10 +253,30 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
 
+      # ✅ Clean old results
+      - name: 🧹 Clean previous results
+        run: |
+          rm -rf allure-results playwright-report playwright-html-report test-results
+
       - name: 🧪 Run STAGE tests
-        run: npx playwright test --grep "@login" --config=playwright.config.stage.ts
+        run: npx playwright test --grep "@newone" --config=playwright.config.stage.ts
         env:
           CI: true
+          ALLURE_ENVIRONMENT: STAGE
+
+      # ✅ Add environment label to Allure results
+      - name: 🏷️ Add Allure environment info
+        if: always()
+        run: |
+          echo "Environment=STAGE" > allure-results/environment.properties
+          echo "Browser=Google Chrome" >> allure-results/environment.properties
+          echo "Config=playwright.config.stage.ts" >> allure-results/environment.properties
+          # Add parent suite label to each result file
+          for file in allure-results/*-result.json; do
+            if [ -f "$file" ]; then
+              sed -i 's/"name":"\([^"]*\)"/"name":"[STAGE] \1"/g' "$file" 2>/dev/null || true
+            fi
+          done
 
       - name: 📊 Upload HTML Report
         uses: actions/upload-artifact@v4
@@ -289,10 +351,30 @@ jobs:
         if: steps.playwright-cache.outputs.cache-hit == 'true'
         run: npx playwright install-deps
 
+      # ✅ Clean old results
+      - name: 🧹 Clean previous results
+        run: |
+          rm -rf allure-results playwright-report playwright-html-report test-results
+
       - name: 🧪 Run PROD tests
-        run: npx playwright test --grep "@login" --config=playwright.config.prod.ts
+        run: npx playwright test --grep "@newone" --config=playwright.config.prod.ts
         env:
           CI: true
+          ALLURE_ENVIRONMENT: PROD
+
+      # ✅ Add environment label to Allure results
+      - name: 🏷️ Add Allure environment info
+        if: always()
+        run: |
+          echo "Environment=PROD" > allure-results/environment.properties
+          echo "Browser=Google Chrome" >> allure-results/environment.properties
+          echo "Config=playwright.config.prod.ts" >> allure-results/environment.properties
+          # Add parent suite label to each result file
+          for file in allure-results/*-result.json; do
+            if [ -f "$file" ]; then
+              sed -i 's/"name":"\([^"]*\)"/"name":"[PROD] \1"/g' "$file" 2>/dev/null || true
+            fi
+          done
 
       - name: 📊 Upload HTML Report
         uses: actions/upload-artifact@v4
@@ -428,12 +510,20 @@ jobs:
       - name: 🔀 Merge All Allure Results
         run: |
           mkdir -p allure-results-merged
-          cp -r allure-results/dev/* allure-results-merged/ 2>/dev/null || true
-          cp -r allure-results/qa/* allure-results-merged/ 2>/dev/null || true
-          cp -r allure-results/stage/* allure-results-merged/ 2>/dev/null || true
-          cp -r allure-results/prod/* allure-results-merged/ 2>/dev/null || true
-          echo "Total files in merged results:"
-          ls -la allure-results-merged/ | wc -l
+          # Copy all files with unique names to avoid overwriting
+          for env in dev qa stage prod; do
+            if [ -d "allure-results/$env" ]; then
+              for file in allure-results/$env/*; do
+                if [ -f "$file" ]; then
+                  filename=$(basename "$file")
+                  cp "$file" "allure-results-merged/${env}_${filename}"
+                fi
+              done
+            fi
+          done
+          echo "📊 Merged Allure Results:"
+          ls -la allure-results-merged/ | head -20
+          echo "Total files: $(ls allure-results-merged/ | wc -l)"
 
       - name: 📦 Setup Java (for Allure)
         uses: actions/setup-java@v4
