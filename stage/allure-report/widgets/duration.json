@@ -1,0 +1,1 @@
+[{"uid":"df5c8b8a52ec6566","name":"[STAGE] verify login","time":{"start":1764172546544,"stop":1764172552145,"duration":5601},"status":"passed","severity":"normal"},{"uid":"605a771db819f5fc","name":"[STAGE] verify invalid login @smoke @login @api","time":{"start":1764172558918,"stop":1764172566315,"duration":7397},"status":"passed","severity":"normal"}]

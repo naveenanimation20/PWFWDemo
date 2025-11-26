@@ -1,0 +1,1 @@
+[{"uid":"f83c0dd2a2db1ba6","name":"[QA] verify login","time":{"start":1764172459975,"stop":1764172466605,"duration":6630},"status":"passed","severity":"normal"},{"uid":"f3cad814fde935d1","name":"[QA] verify invalid login @smoke @login @api","time":{"start":1764172471642,"stop":1764172479035,"duration":7393},"status":"passed","severity":"normal"}]

@@ -1,0 +1,3 @@
+"Status","Start Time","Stop Time","Duration in ms","Parent Suite","Suite","Sub Suite","Test Class","Test Method","Name","Description"
+"passed","Wed Nov 26 15:55:46 UTC 2025","Wed Nov 26 15:55:52 UTC 2025","5601","","","","","","[STAGE] verify login",""
+"passed","Wed Nov 26 15:55:58 UTC 2025","Wed Nov 26 15:56:06 UTC 2025","7397","","","","","","[STAGE] verify invalid login @smoke @login @api",""
