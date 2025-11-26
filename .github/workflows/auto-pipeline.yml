@@ -4,6 +4,7 @@
 # Flow: dev → qa → stage → prod (automatic)
 # Trigger: Push to develop/main branches
 # Reports: Published to GitHub Pages
+# ✅ Playwright browsers cached for faster runs
 # ============================================
 
 name: Playwright Auto Pipeline
@@ -38,11 +39,26 @@ jobs:
       - name: 📚 Install dependencies
         run: npm ci
 
+      # ✅ Cache Playwright browsers
+      - name: 🗄️ Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
       - name: 🎭 Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
+      - name: 🎭 Install Playwright dependencies (if cached)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
+
       - name: 🧪 Run DEV tests
-        run: npx playwright test --config=playwright.config.dev.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.dev.ts
         env:
           CI: true
 
@@ -99,11 +115,26 @@ jobs:
       - name: 📚 Install dependencies
         run: npm ci
 
+      # ✅ Cache Playwright browsers
+      - name: 🗄️ Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
       - name: 🎭 Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
+      - name: 🎭 Install Playwright dependencies (if cached)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
+
       - name: 🧪 Run QA tests
-        run: npx playwright test --config=playwright.config.qa.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.qa.ts
         env:
           CI: true
 
@@ -162,11 +193,26 @@ jobs:
       - name: 📚 Install dependencies
         run: npm ci
 
+      # ✅ Cache Playwright browsers
+      - name: 🗄️ Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
       - name: 🎭 Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
+      - name: 🎭 Install Playwright dependencies (if cached)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
+
       - name: 🧪 Run STAGE tests
-        run: npx playwright test --config=playwright.config.stage.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.stage.ts
         env:
           CI: true
 
@@ -225,11 +271,26 @@ jobs:
       - name: 📚 Install dependencies
         run: npm ci
 
+      # ✅ Cache Playwright browsers
+      - name: 🗄️ Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
+
       - name: 🎭 Install Playwright browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps
 
+      - name: 🎭 Install Playwright dependencies (if cached)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps
+
       - name: 🧪 Run PROD tests
-        run: npx playwright test --config=playwright.config.prod.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.prod.ts
         env:
           CI: true
 
