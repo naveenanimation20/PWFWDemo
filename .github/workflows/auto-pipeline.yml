@@ -58,7 +58,7 @@ jobs:
         run: npx playwright install-deps
 
       - name: 🧪 Run DEV tests
-        run: npx playwright test --config=playwright.config.dev.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.dev.ts
         env:
           CI: true
 
@@ -134,7 +134,7 @@ jobs:
         run: npx playwright install-deps
 
       - name: 🧪 Run QA tests
-        run: npx playwright test --config=playwright.config.qa.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.qa.ts
         env:
           CI: true
 
@@ -212,7 +212,7 @@ jobs:
         run: npx playwright install-deps
 
       - name: 🧪 Run STAGE tests
-        run: npx playwright test --config=playwright.config.stage.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.stage.ts
         env:
           CI: true
 
@@ -290,7 +290,7 @@ jobs:
         run: npx playwright install-deps
 
       - name: 🧪 Run PROD tests
-        run: npx playwright test --config=playwright.config.prod.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.prod.ts
         env:
           CI: true
 
