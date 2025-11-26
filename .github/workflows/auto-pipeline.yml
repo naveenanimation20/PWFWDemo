@@ -64,7 +64,7 @@ jobs:
           rm -rf allure-results playwright-report playwright-html-report test-results
 
       - name: 🧪 Run DEV tests
-        run: npx playwright test --grep "@newone" --config=playwright.config.dev.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.dev.ts
         env:
           CI: true
           ALLURE_ENVIRONMENT: DEV
@@ -161,7 +161,7 @@ jobs:
           rm -rf allure-results playwright-report playwright-html-report test-results
 
       - name: 🧪 Run QA tests
-        run: npx playwright test --grep "@newone" --config=playwright.config.qa.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.qa.ts
         env:
           CI: true
           ALLURE_ENVIRONMENT: QA
@@ -259,7 +259,7 @@ jobs:
           rm -rf allure-results playwright-report playwright-html-report test-results
 
       - name: 🧪 Run STAGE tests
-        run: npx playwright test --grep "@newone" --config=playwright.config.stage.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.stage.ts
         env:
           CI: true
           ALLURE_ENVIRONMENT: STAGE
@@ -357,7 +357,7 @@ jobs:
           rm -rf allure-results playwright-report playwright-html-report test-results
 
       - name: 🧪 Run PROD tests
-        run: npx playwright test --grep "@newone" --config=playwright.config.prod.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.prod.ts
         env:
           CI: true
           ALLURE_ENVIRONMENT: PROD
@@ -518,46 +518,62 @@ jobs:
         run: |
           curl -o allure-2.24.0.tgz -Ls https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.24.0/allure-commandline-2.24.0.tgz
           tar -zxvf allure-2.24.0.tgz
-          echo "$PWD/allure-2.24.0/bin" >> $GITHUB_PATH
+          # Use absolute path instead of PATH
+          echo "ALLURE_PATH=$PWD/allure-2.24.0/bin/allure" >> $GITHUB_ENV
+          echo "✅ Allure installed at: $PWD/allure-2.24.0/bin/allure"
 
       - name: 📊 Generate DEV Allure Report
         run: |
-          if [ -d "allure-results/dev" ]; then
-            allure generate allure-results/dev -o github-pages/dev/allure-report --clean
+          echo "📂 Checking DEV allure-results..."
+          ls -la allure-results/dev/ || echo "Directory not found"
+          if [ -d "allure-results/dev" ] && [ "$(ls -A allure-results/dev 2>/dev/null)" ]; then
+            $ALLURE_PATH generate allure-results/dev -o github-pages/dev/allure-report --clean
             echo "✅ DEV Allure report generated"
+            ls -la github-pages/dev/allure-report/
           else
-            echo "⚠️ No DEV allure results found"
+            echo "⚠️ No DEV allure results found or directory empty"
           fi
-        continue-on-error: true
 
       - name: 📊 Generate QA Allure Report
         run: |
-          if [ -d "allure-results/qa" ]; then
-            allure generate allure-results/qa -o github-pages/qa/allure-report --clean
+          echo "📂 Checking QA allure-results..."
+          ls -la allure-results/qa/ || echo "Directory not found"
+          if [ -d "allure-results/qa" ] && [ "$(ls -A allure-results/qa 2>/dev/null)" ]; then
+            $ALLURE_PATH generate allure-results/qa -o github-pages/qa/allure-report --clean
             echo "✅ QA Allure report generated"
+            ls -la github-pages/qa/allure-report/
           else
-            echo "⚠️ No QA allure results found"
+            echo "⚠️ No QA allure results found or directory empty"
           fi
-        continue-on-error: true
 
       - name: 📊 Generate STAGE Allure Report
         run: |
-          if [ -d "allure-results/stage" ]; then
-            allure generate allure-results/stage -o github-pages/stage/allure-report --clean
+          echo "📂 Checking STAGE allure-results..."
+          ls -la allure-results/stage/ || echo "Directory not found"
+          if [ -d "allure-results/stage" ] && [ "$(ls -A allure-results/stage 2>/dev/null)" ]; then
+            $ALLURE_PATH generate allure-results/stage -o github-pages/stage/allure-report --clean
             echo "✅ STAGE Allure report generated"
+            ls -la github-pages/stage/allure-report/
           else
-            echo "⚠️ No STAGE allure results found"
+            echo "⚠️ No STAGE allure results found or directory empty"
           fi
-        continue-on-error: true
 
       - name: 📊 Generate PROD Allure Report
         run: |
-          if [ -d "allure-results/prod" ]; then
-            allure generate allure-results/prod -o github-pages/prod/allure-report --clean
+          echo "📂 Checking PROD allure-results..."
+          ls -la allure-results/prod/ || echo "Directory not found"
+          if [ -d "allure-results/prod" ] && [ "$(ls -A allure-results/prod 2>/dev/null)" ]; then
+            $ALLURE_PATH generate allure-results/prod -o github-pages/prod/allure-report --clean
             echo "✅ PROD Allure report generated"
+            ls -la github-pages/prod/allure-report/
           else
-            echo "⚠️ No PROD allure results found"
+            echo "⚠️ No PROD allure results found or directory empty"
           fi
+
+      - name: 📂 Verify all reports before deploy
+        run: |
+          echo "📊 Final github-pages structure:"
+          find github-pages -type f -name "index.html" | head -20
         continue-on-error: true
 
       # ========== Create Index Page ==========
