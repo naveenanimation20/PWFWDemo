@@ -510,19 +510,60 @@ jobs:
       - name: 🔀 Merge All Allure Results
         run: |
           mkdir -p allure-results-merged
-          # Copy all files with unique names to avoid overwriting
+          
+          echo "📂 Checking downloaded artifacts..."
+          ls -la allure-results/
+          
           for env in dev qa stage prod; do
+            echo "Processing $env..."
             if [ -d "allure-results/$env" ]; then
-              for file in allure-results/$env/*; do
+              echo "  Found allure-results/$env"
+              ls -la allure-results/$env/ | head -5
+              
+              for file in allure-results/$env/*-result.json; do
+                if [ -f "$file" ]; then
+                  filename=$(basename "$file")
+                  newfile="allure-results-merged/${env}_${filename}"
+                  
+                  # Modify historyId and uuid to make unique per environment
+                  sed -e "s/\"historyId\":\"/\"historyId\":\"${env}_/g" \
+                      -e "s/\"uuid\":\"/\"uuid\":\"${env}_/g" \
+                      -e "s/\"name\":\"/\"name\":\"[${env^^}] /g" \
+                      "$file" > "$newfile"
+                  
+                  echo "  ✅ Copied: $filename -> ${env}_${filename}"
+                fi
+              done
+              
+              # Copy container files
+              for file in allure-results/$env/*-container.json; do
+                if [ -f "$file" ]; then
+                  filename=$(basename "$file")
+                  sed "s/\"uuid\":\"/\"uuid\":\"${env}_/g" "$file" > "allure-results-merged/${env}_${filename}"
+                fi
+              done
+              
+              # Copy attachment files
+              for file in allure-results/$env/*-attachment.*; do
                 if [ -f "$file" ]; then
                   filename=$(basename "$file")
                   cp "$file" "allure-results-merged/${env}_${filename}"
                 fi
               done
+              
+              # Copy environment.properties
+              if [ -f "allure-results/$env/environment.properties" ]; then
+                cat "allure-results/$env/environment.properties" >> "allure-results-merged/environment.properties"
+                echo "" >> "allure-results-merged/environment.properties"
+              fi
+            else
+              echo "  ⚠️ Directory allure-results/$env not found"
             fi
           done
+          
+          echo ""
           echo "📊 Merged Allure Results:"
-          ls -la allure-results-merged/ | head -20
+          ls -la allure-results-merged/ | head -30
           echo "Total files: $(ls allure-results-merged/ | wc -l)"
 
       - name: 📦 Setup Java (for Allure)
