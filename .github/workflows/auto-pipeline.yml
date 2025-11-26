@@ -58,7 +58,7 @@ jobs:
         run: npx playwright install-deps
 
       - name: 🧪 Run DEV tests
-        run: npx playwright test --grep "@login" --config=playwright.config.dev.ts
+        run: npx playwright test --config=playwright.config.dev.ts
         env:
           CI: true
 
@@ -134,7 +134,7 @@ jobs:
         run: npx playwright install-deps
 
       - name: 🧪 Run QA tests
-        run: npx playwright test --grep "@login" --config=playwright.config.qa.ts
+        run: npx playwright test --config=playwright.config.qa.ts
         env:
           CI: true
 
@@ -212,7 +212,7 @@ jobs:
         run: npx playwright install-deps
 
       - name: 🧪 Run STAGE tests
-        run: npx playwright test --grep "@login" --config=playwright.config.stage.ts
+        run: npx playwright test --config=playwright.config.stage.ts
         env:
           CI: true
 
@@ -290,7 +290,7 @@ jobs:
         run: npx playwright install-deps
 
       - name: 🧪 Run PROD tests
-        run: npx playwright test --grep "@login" --config=playwright.config.prod.ts
+        run: npx playwright test --config=playwright.config.prod.ts
         env:
           CI: true
 
@@ -397,13 +397,43 @@ jobs:
         continue-on-error: true
 
       # ========== Allure Reports ==========
-      - name: 📥 Download All Allure Results
+      - name: 📥 Download DEV Allure Results
         uses: actions/download-artifact@v4
         with:
-          pattern: allure-results-*
-          path: allure-results
-          merge-multiple: true
+          name: allure-results-dev
+          path: allure-results/dev
         continue-on-error: true
+
+      - name: 📥 Download QA Allure Results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-qa
+          path: allure-results/qa
+        continue-on-error: true
+
+      - name: 📥 Download STAGE Allure Results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-stage
+          path: allure-results/stage
+        continue-on-error: true
+
+      - name: 📥 Download PROD Allure Results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results-prod
+          path: allure-results/prod
+        continue-on-error: true
+
+      - name: 🔀 Merge All Allure Results
+        run: |
+          mkdir -p allure-results-merged
+          cp -r allure-results/dev/* allure-results-merged/ 2>/dev/null || true
+          cp -r allure-results/qa/* allure-results-merged/ 2>/dev/null || true
+          cp -r allure-results/stage/* allure-results-merged/ 2>/dev/null || true
+          cp -r allure-results/prod/* allure-results-merged/ 2>/dev/null || true
+          echo "Total files in merged results:"
+          ls -la allure-results-merged/ | wc -l
 
       - name: 📦 Setup Java (for Allure)
         uses: actions/setup-java@v4
@@ -419,7 +449,7 @@ jobs:
 
       - name: 📊 Generate Allure Report
         run: |
-          allure generate allure-results -o github-pages/allure-report --clean
+          allure generate allure-results-merged -o github-pages/allure-report --clean
         continue-on-error: true
 
       # ========== Create Index Page ==========
