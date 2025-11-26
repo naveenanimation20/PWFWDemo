@@ -1,0 +1,4 @@
+"DESCRIPTION","DURATION IN MS","NAME","PARENT SUITE","START TIME","STATUS","STOP TIME","SUB SUITE","SUITE","TEST CLASS","TEST METHOD"
+"","3182","verify login","Google Chrome","Wed Nov 26 15:53:55 UTC 2025","passed","Wed Nov 26 15:53:58 UTC 2025","","loginpage.spec.ts","",""
+"","7450","verify invalid login @smoke @login @api","Google Chrome","Wed Nov 26 15:54:00 UTC 2025","passed","Wed Nov 26 15:54:07 UTC 2025","","loginpage.spec.ts","",""
+"","2","verify invalid login @newone","Google Chrome","Wed Nov 26 15:54:07 UTC 2025","passed","Wed Nov 26 15:54:07 UTC 2025","","loginpage.spec.ts","",""
