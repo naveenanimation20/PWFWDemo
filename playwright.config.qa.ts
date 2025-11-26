@@ -55,45 +55,45 @@ export default defineConfig({
         }
       }
     },
-    {
-      name: 'Microsoft Edge',
-      use: {
-        channel: 'msedge',
-        viewport: { width: 1920, height: 1080 },
-        launchOptions: {
-          args: ['--window-size=1920,1080'],
-        }
-      }
-    },
-    {
-      name: 'Chromium',
-      use: {
-        browserName: 'chromium',
-        viewport: { width: 1920, height: 1080 },
-        launchOptions: {
-          args: [],
-        }
-      }
-    },
-    {
-      name: 'Firefox',
-      use: {
-        browserName: 'firefox',
-        viewport: { width: 1920, height: 1080 },
-        launchOptions: {
-          args: [],
-        }
-      }
-    },
-    {
-      name: 'WebKit',
-      use: {
-        browserName: 'webkit',
-        viewport: { width: 1920, height: 1080 },
-        launchOptions: {
-          args: [],
-        }
-      }
-    }
+    // {
+    //   name: 'Microsoft Edge',
+    //   use: {
+    //     channel: 'msedge',
+    //     viewport: { width: 1920, height: 1080 },
+    //     launchOptions: {
+    //       args: ['--window-size=1920,1080'],
+    //     }
+    //   }
+    // },
+    // {
+    //   name: 'Chromium',
+    //   use: {
+    //     browserName: 'chromium',
+    //     viewport: { width: 1920, height: 1080 },
+    //     launchOptions: {
+    //       args: [],
+    //     }
+    //   }
+    // },
+    // {
+    //   name: 'Firefox',
+    //   use: {
+    //     browserName: 'firefox',
+    //     viewport: { width: 1920, height: 1080 },
+    //     launchOptions: {
+    //       args: [],
+    //     }
+    //   }
+    // },
+    // {
+    //   name: 'WebKit',
+    //   use: {
+    //     browserName: 'webkit',
+    //     viewport: { width: 1920, height: 1080 },
+    //     launchOptions: {
+    //       args: [],
+    //     }
+    //   }
+    // }
   ],
 });
