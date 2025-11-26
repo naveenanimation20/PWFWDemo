@@ -64,7 +64,7 @@ jobs:
           rm -rf allure-results playwright-report playwright-html-report test-results
 
       - name: 🧪 Run DEV tests
-        run: npx playwright test --grep "@newone" --config=playwright.config.dev.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.dev.ts
         env:
           CI: true
           ALLURE_ENVIRONMENT: DEV
@@ -161,7 +161,7 @@ jobs:
           rm -rf allure-results playwright-report playwright-html-report test-results
 
       - name: 🧪 Run QA tests
-        run: npx playwright test --grep "@newone" --config=playwright.config.qa.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.qa.ts
         env:
           CI: true
           ALLURE_ENVIRONMENT: QA
@@ -259,7 +259,7 @@ jobs:
           rm -rf allure-results playwright-report playwright-html-report test-results
 
       - name: 🧪 Run STAGE tests
-        run: npx playwright test --grep "@newone" --config=playwright.config.stage.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.stage.ts
         env:
           CI: true
           ALLURE_ENVIRONMENT: STAGE
@@ -357,7 +357,7 @@ jobs:
           rm -rf allure-results playwright-report playwright-html-report test-results
 
       - name: 🧪 Run PROD tests
-        run: npx playwright test --grep "@newone" --config=playwright.config.prod.ts
+        run: npx playwright test --grep "@login" --config=playwright.config.prod.ts
         env:
           CI: true
           ALLURE_ENVIRONMENT: PROD
@@ -478,7 +478,7 @@ jobs:
           path: github-pages/prod/playwright-html-report
         continue-on-error: true
 
-      # ========== Allure Reports ==========
+      # ========== Download Allure Results ==========
       - name: 📥 Download DEV Allure Results
         uses: actions/download-artifact@v4
         with:
@@ -507,65 +507,7 @@ jobs:
           path: allure-results/prod
         continue-on-error: true
 
-      - name: 🔀 Merge All Allure Results
-        run: |
-          mkdir -p allure-results-merged
-          
-          echo "📂 Checking downloaded artifacts..."
-          ls -la allure-results/
-          
-          for env in dev qa stage prod; do
-            echo "Processing $env..."
-            if [ -d "allure-results/$env" ]; then
-              echo "  Found allure-results/$env"
-              ls -la allure-results/$env/ | head -5
-              
-              for file in allure-results/$env/*-result.json; do
-                if [ -f "$file" ]; then
-                  filename=$(basename "$file")
-                  newfile="allure-results-merged/${env}_${filename}"
-                  
-                  # Modify historyId and uuid to make unique per environment
-                  sed -e "s/\"historyId\":\"/\"historyId\":\"${env}_/g" \
-                      -e "s/\"uuid\":\"/\"uuid\":\"${env}_/g" \
-                      -e "s/\"name\":\"/\"name\":\"[${env^^}] /g" \
-                      "$file" > "$newfile"
-                  
-                  echo "  ✅ Copied: $filename -> ${env}_${filename}"
-                fi
-              done
-              
-              # Copy container files
-              for file in allure-results/$env/*-container.json; do
-                if [ -f "$file" ]; then
-                  filename=$(basename "$file")
-                  sed "s/\"uuid\":\"/\"uuid\":\"${env}_/g" "$file" > "allure-results-merged/${env}_${filename}"
-                fi
-              done
-              
-              # Copy attachment files
-              for file in allure-results/$env/*-attachment.*; do
-                if [ -f "$file" ]; then
-                  filename=$(basename "$file")
-                  cp "$file" "allure-results-merged/${env}_${filename}"
-                fi
-              done
-              
-              # Copy environment.properties
-              if [ -f "allure-results/$env/environment.properties" ]; then
-                cat "allure-results/$env/environment.properties" >> "allure-results-merged/environment.properties"
-                echo "" >> "allure-results-merged/environment.properties"
-              fi
-            else
-              echo "  ⚠️ Directory allure-results/$env not found"
-            fi
-          done
-          
-          echo ""
-          echo "📊 Merged Allure Results:"
-          ls -la allure-results-merged/ | head -30
-          echo "Total files: $(ls allure-results-merged/ | wc -l)"
-
+      # ========== Generate Allure Reports PER ENVIRONMENT ==========
       - name: 📦 Setup Java (for Allure)
         uses: actions/setup-java@v4
         with:
@@ -578,9 +520,44 @@ jobs:
           tar -zxvf allure-2.24.0.tgz
           echo "$PWD/allure-2.24.0/bin" >> $GITHUB_PATH
 
-      - name: 📊 Generate Allure Report
+      - name: 📊 Generate DEV Allure Report
         run: |
-          allure generate allure-results-merged -o github-pages/allure-report --clean
+          if [ -d "allure-results/dev" ]; then
+            allure generate allure-results/dev -o github-pages/dev/allure-report --clean
+            echo "✅ DEV Allure report generated"
+          else
+            echo "⚠️ No DEV allure results found"
+          fi
+        continue-on-error: true
+
+      - name: 📊 Generate QA Allure Report
+        run: |
+          if [ -d "allure-results/qa" ]; then
+            allure generate allure-results/qa -o github-pages/qa/allure-report --clean
+            echo "✅ QA Allure report generated"
+          else
+            echo "⚠️ No QA allure results found"
+          fi
+        continue-on-error: true
+
+      - name: 📊 Generate STAGE Allure Report
+        run: |
+          if [ -d "allure-results/stage" ]; then
+            allure generate allure-results/stage -o github-pages/stage/allure-report --clean
+            echo "✅ STAGE Allure report generated"
+          else
+            echo "⚠️ No STAGE allure results found"
+          fi
+        continue-on-error: true
+
+      - name: 📊 Generate PROD Allure Report
+        run: |
+          if [ -d "allure-results/prod" ]; then
+            allure generate allure-results/prod -o github-pages/prod/allure-report --clean
+            echo "✅ PROD Allure report generated"
+          else
+            echo "⚠️ No PROD allure results found"
+          fi
         continue-on-error: true
 
       # ========== Create Index Page ==========
@@ -604,41 +581,39 @@ jobs:
               .qa { border-left: 4px solid #f39c12; }
               .stage { border-left: 4px solid #9b59b6; }
               .prod { border-left: 4px solid #e74c3c; }
-              .allure { border-left: 4px solid #3498db; }
               .timestamp { color: #7f8c8d; font-size: 0.9em; }
             </style>
           </head>
           <body>
             <h1>🎭 Playwright Test Reports</h1>
             <p class="timestamp">Last updated: ${CURRENT_DATE}</p>
-            
-            <div class="env-section allure">
-              <h3>📊 Allure Report (All Environments)</h3>
-              <a href="./allure-report/index.html">View Allure Report</a>
-            </div>
 
             <div class="env-section dev">
               <h3>🔧 DEV Environment</h3>
               <a href="./dev/playwright-report/index.html">Playwright Report</a>
               <a href="./dev/playwright-html-report/index.html">HTML Report</a>
+              <a href="./dev/allure-report/index.html">Allure Report</a>
             </div>
             
             <div class="env-section qa">
               <h3>🔍 QA Environment</h3>
               <a href="./qa/playwright-report/index.html">Playwright Report</a>
               <a href="./qa/playwright-html-report/index.html">HTML Report</a>
+              <a href="./qa/allure-report/index.html">Allure Report</a>
             </div>
             
             <div class="env-section stage">
               <h3>🎯 STAGE Environment</h3>
               <a href="./stage/playwright-report/index.html">Playwright Report</a>
               <a href="./stage/playwright-html-report/index.html">HTML Report</a>
+              <a href="./stage/allure-report/index.html">Allure Report</a>
             </div>
             
             <div class="env-section prod">
               <h3>🚀 PROD Environment</h3>
               <a href="./prod/playwright-report/index.html">Playwright Report</a>
               <a href="./prod/playwright-html-report/index.html">HTML Report</a>
+              <a href="./prod/allure-report/index.html">Allure Report</a>
             </div>
           </body>
           </html>
@@ -662,23 +637,24 @@ jobs:
           echo "🏠 Main Dashboard:"
           echo "   https://naveenanimation20.github.io/PWFWDemo/"
           echo ""
-          echo "📈 Allure Report:"
-          echo "   https://naveenanimation20.github.io/PWFWDemo/allure-report/index.html"
-          echo ""
           echo "🔧 DEV Reports:"
           echo "   Playwright: https://naveenanimation20.github.io/PWFWDemo/dev/playwright-report/index.html"
           echo "   HTML:       https://naveenanimation20.github.io/PWFWDemo/dev/playwright-html-report/index.html"
+          echo "   Allure:     https://naveenanimation20.github.io/PWFWDemo/dev/allure-report/index.html"
           echo ""
           echo "🔍 QA Reports:"
           echo "   Playwright: https://naveenanimation20.github.io/PWFWDemo/qa/playwright-report/index.html"
           echo "   HTML:       https://naveenanimation20.github.io/PWFWDemo/qa/playwright-html-report/index.html"
+          echo "   Allure:     https://naveenanimation20.github.io/PWFWDemo/qa/allure-report/index.html"
           echo ""
           echo "🎯 STAGE Reports:"
           echo "   Playwright: https://naveenanimation20.github.io/PWFWDemo/stage/playwright-report/index.html"
           echo "   HTML:       https://naveenanimation20.github.io/PWFWDemo/stage/playwright-html-report/index.html"
+          echo "   Allure:     https://naveenanimation20.github.io/PWFWDemo/stage/allure-report/index.html"
           echo ""
           echo "🚀 PROD Reports:"
           echo "   Playwright: https://naveenanimation20.github.io/PWFWDemo/prod/playwright-report/index.html"
           echo "   HTML:       https://naveenanimation20.github.io/PWFWDemo/prod/playwright-html-report/index.html"
+          echo "   Allure:     https://naveenanimation20.github.io/PWFWDemo/prod/allure-report/index.html"
           echo ""
           echo "============================================"
